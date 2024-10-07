@@ -1,10 +1,9 @@
 import prisma from "@/libs/prisma";
+import getSession from "./getSession";
 
 const getUsers = async () => {
-  const session = "";
-  // getSession
+  const session = await getSession();
 
-  // @ts-ignore
   if (!session?.user?.email) return [];
 
   try {
@@ -14,7 +13,7 @@ const getUsers = async () => {
       },
       where: {
         NOT: {
-          email: "",
+          email: session.user.email,
         },
       },
     });
