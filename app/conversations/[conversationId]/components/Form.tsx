@@ -2,56 +2,57 @@
 
 import useConversation from "@/app/hooks/useConversation";
 import axios from "axios";
-import { 
-  FieldValues, 
-  SubmitHandler, 
-  useForm
-} from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { HiPaperAirplane, HiPhoto } from "react-icons/hi2";
 import { CldUploadButton } from "next-cloudinary";
+import EmojiPicker from "emoji-picker-react";
 
 import MessageInput from "./MessageInput";
+import { useState } from "react";
+import { Smile } from "lucide-react";
+import Button from "@/app/components/Button";
 
 const Form = () => {
   const { conversationId } = useConversation();
-
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const {
     register,
     handleSubmit,
     setValue,
-    formState: {
-      errors,
-    }
+    watch,
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      message: ''
-    }
+      message: "",
+    },
   });
 
+  const message = watch("message");
+
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setValue('message', '', { shouldValidate: true });
-    
-    axios.post('/api/messages', {
+    setValue("message", "", { shouldValidate: true });
+
+    axios.post("/api/messages", {
       ...data,
-      conversationId
-    })
+      conversationId,
+    });
   };
 
   const handleUpload = (result: any) => {
-    axios.post('/api/messages', {
+    axios.post("/api/messages", {
       image: result?.info?.secure_url,
-      conversationId
-    })
-  }
+      conversationId,
+    });
+  };
 
-  return ( 
+  return (
     <div
       className="
         py-4
         px-4
         bg-white
         border-t
-        flex
+      flex
         items-center
         gap-2
         lg:gap-4
@@ -65,6 +66,28 @@ const Form = () => {
       >
         <HiPhoto size={30} className="text-sky-500" />
       </CldUploadButton>
+      <div className="relative">
+        <Button
+          secondary
+          onClick={() => {
+            setShowEmojiPicker((prev) => !prev);
+          }}
+        >
+          <Smile />
+        </Button>
+        <div className="absolute bottom-12">
+          <EmojiPicker
+            open={showEmojiPicker}
+            onEmojiClick={(e) => {
+              setValue("message", message + e.emoji);
+              setShowEmojiPicker(false);
+            }}
+            autoFocusSearch={false}
+            lazyLoadEmojis={true}
+          />
+        </div>
+      </div>
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex items-center gap-2 lg:gap-4 w-full"
@@ -87,14 +110,11 @@ const Form = () => {
             transition
           "
         >
-          <HiPaperAirplane
-            size={18}
-            className="text-white"
-          />
+          <HiPaperAirplane size={18} className="text-white" />
         </button>
       </form>
     </div>
-   );
-}
- 
+  );
+};
+
 export default Form;

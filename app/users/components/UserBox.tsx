@@ -14,26 +14,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import { ArrowBigDown, ChevronRight } from "lucide-react";
 
 interface UserBoxProps {
-  data: User
+  data: User;
 }
 
-const UserBox: React.FC<UserBoxProps> = ({
-  data
-}) => {
+const UserBox: React.FC<UserBoxProps> = ({ data }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = useCallback(() => {
     setIsLoading(true);
 
-    axios.post('/api/conversations', {
-      userId: data.id
-    })
+    axios
+      .post("/api/conversations", {
+        userId: data.id,
+      })
       .then((data) => {
         router.push(`/conversations/${data.data.id}`);
       })
@@ -42,9 +41,7 @@ const UserBox: React.FC<UserBoxProps> = ({
 
   return (
     <>
-      {isLoading && (
-        <LoadingModal />
-      )}
+      {isLoading && <LoadingModal />}
       <div
         onClick={handleClick}
         className="
@@ -84,15 +81,9 @@ const UserBox: React.FC<UserBoxProps> = ({
             </div>
           </div>
         </div>
-        <DropdownMenu >
-          <DropdownMenuTrigger><ChevronRight className="rotate-90 text-sm" /></DropdownMenuTrigger>
-          <DropdownMenuContent align="center">
-            <DropdownMenuItem><HiOutlinePlusSm className="mr-1 text-xl" /> Add friend</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </>
   );
-}
+};
 
 export default UserBox;

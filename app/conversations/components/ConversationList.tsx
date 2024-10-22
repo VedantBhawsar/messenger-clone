@@ -17,19 +17,19 @@ import { find } from "lodash";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
-  users: User[]
-  user: User | null
+  users: User[];
+  user: User | null;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({
   initialItems,
-  users
-  , user
+  users,
+  user,
 }) => {
   const session = useSession();
   const [items, setItems] = useState(initialItems);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(session.data)
+  console.log(session.data);
   const router = useRouter();
 
   const { conversationId, isOpen } = useConversation();
@@ -56,38 +56,40 @@ const ConversationList: React.FC<ConversationListProps> = ({
     };
 
     const updateHandler = (conversation: FullConversationType) => {
-      setItems((current) => current.map((currentConversation) => {
-        if (currentConversation.id === conversation.id) {
-          return {
-            ...currentConversation,
-            messages: conversation.messages
+      setItems((current) =>
+        current.map((currentConversation) => {
+          if (currentConversation.id === conversation.id) {
+            return {
+              ...currentConversation,
+              messages: conversation.messages,
+            };
           }
-        }
 
-        return currentConversation;
-      }))
+          return currentConversation;
+        })
+      );
     };
 
     const removeHandler = (conversation: FullConversationType) => {
       setItems((current) => {
-        return [...current.filter((convo) => convo.id !== conversation.id)]
+        return [...current.filter((convo) => convo.id !== conversation.id)];
       });
 
       if (conversationId === conversation.id) {
-        router.push('/conversations');
+        router.push("/conversations");
       }
     };
 
-    pusherClient.bind('conversation:new', newHandler);
-    pusherClient.bind('conversation:update', updateHandler);
-    pusherClient.bind('conversation:remove', removeHandler);
+    pusherClient.bind("conversation:new", newHandler);
+    pusherClient.bind("conversation:update", updateHandler);
+    pusherClient.bind("conversation:remove", removeHandler);
 
     return () => {
       pusherClient.unsubscribe(pusherKey);
-      pusherClient.unbind('conversation:new', newHandler);
-      pusherClient.unbind('conversation:update', updateHandler);
-      pusherClient.unbind('conversation:remove', removeHandler);
-    }
+      pusherClient.unbind("conversation:new", newHandler);
+      pusherClient.unbind("conversation:update", updateHandler);
+      pusherClient.unbind("conversation:remove", removeHandler);
+    };
   }, [pusherKey, conversationId, router]);
 
   return (
@@ -98,7 +100,8 @@ const ConversationList: React.FC<ConversationListProps> = ({
         onClose={() => setIsModalOpen(false)}
       />
       <aside
-        className={clsx(`
+        className={clsx(
+          `
           fixed
           inset-y-0
           pb-20
@@ -110,16 +113,18 @@ const ConversationList: React.FC<ConversationListProps> = ({
           border-r
           border-gray-200
         `,
-          isOpen ? 'hidden' : 'block w-full left-0'
+          isOpen ? "hidden" : "block w-full left-0"
         )}
       >
         <div className="px-5">
           <div className="flex justify-between mb-4 pt-4">
-            <div className="
+            <div
+              className="
               text-2xl
               font-bold
               text-neutral-800
-            ">
+            "
+            >
               Messages
             </div>
             <div
@@ -137,16 +142,33 @@ const ConversationList: React.FC<ConversationListProps> = ({
               <MdOutlineGroupAdd size={20} />
             </div>
           </div>
-          {items.filter(item => user?.pinnedConversationIds.includes(item.id)).map((item) => (
-            <ConversationBox
-              key={item.id}
-              data={item}
-              selected={conversationId === item.id}
-              pin={true}
-            />
-          ))}
-          {
-            items.filter(item => !user?.pinnedConversationIds.includes(item.id)).map((item) => (
+          {items.filter((item) => user?.pinnedConversationIds.includes(item.id))
+            .length > 0 && (
+            <div className="h-10 bg-gray-50 p-2">
+              <p>Pinned Chats</p>
+            </div>
+          )}
+          {items
+            .filter((item) => user?.pinnedConversationIds.includes(item.id))
+            .map((item) => (
+              <ConversationBox
+                key={item.id}
+                data={item}
+                selected={conversationId === item.id}
+                pin={true}
+              />
+            ))}
+
+          {items.filter(
+            (item) => !user?.pinnedConversationIds.includes(item.id)
+          ) && (
+            <div className="h-10 bg-gray-50 p-2">
+              <p className="font-semibold">Unpinned Chats</p>
+            </div>
+          )}
+          {items
+            .filter((item) => !user?.pinnedConversationIds.includes(item.id))
+            .map((item) => (
               <ConversationBox
                 key={item.id}
                 data={item}
@@ -157,6 +179,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
       </aside>
     </>
   );
-}
+};
 
 export default ConversationList;

@@ -11,7 +11,12 @@ import { FullConversationType } from "@/app/types";
 import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/AvatarGroup";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ChevronRight, PinIcon } from "lucide-react";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import axios from "axios";
@@ -22,25 +27,24 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import Link from "next/link";
 
 interface ConversationBoxProps {
-  data: FullConversationType,
+  data: FullConversationType;
   selected?: boolean;
-  pin?: boolean
+  pin?: boolean;
 }
 
 const ConversationBox: React.FC<ConversationBoxProps> = ({
   data,
-  selected
-  ,
-  pin = false
+  selected,
+
+  pin = false,
 }) => {
   const otherUser = useOtherUser(data);
   const session = useSession();
   const router = useRouter();
-
 
   const handleClick = useCallback(() => {
     router.push(`/conversations/${data.id}`);
@@ -67,13 +71,12 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
       return false;
     }
 
-    return seenArray
-      .filter((user) => user.email === userEmail).length !== 0;
+    return seenArray.filter((user) => user.email === userEmail).length !== 0;
   }, [userEmail, lastMessage]);
 
   const lastMessageText = useMemo(() => {
     if (lastMessage?.image) {
-      return 'Sent an image';
+      return "Sent an image";
     }
 
     if (lastMessage?.body) {
@@ -83,22 +86,22 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     return "Started a conversation";
   }, [lastMessage]);
 
-
-
   const handlePin = async () => {
     try {
-      const { data } = await axios.post(`/api/conversations/6715f632a791558915cf9938/pin`)
-      toast.success(data.message || "update successfully")
-      await session.update()
+      const response = await axios.post(`/api/conversations/${data.id}/pin`);
+      toast.success(response.data.message || "update successfully");
+      await session.update();
+      router.refresh();
     } catch (error: any) {
-      console.log(error.message)
-      toast.error(error.messagr || "Something went wrong in server side")
+      console.log(error.message);
+      toast.error(error.messagr || "Something went wrong in server side");
     }
-  }
+  };
 
   return (
     <div
-      className={clsx(`
+      className={clsx(
+        `
         w-full,
         relative
         flex
@@ -110,7 +113,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
         cursor-pointer
         p-3
       `,
-        selected ? 'bg-neutral-100' : 'bg-white'
+        selected ? "bg-neutral-100" : "bg-white"
       )}
     >
       {data.isGroup ? (
@@ -120,9 +123,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
       )}
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">
-          <div
-            className="flex justify-between relative"
-          >
+          <div className="flex justify-between relative">
             <Link
               href={`/conversations/${data.id}`}
               className="
@@ -134,7 +135,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
             >
               {data.name || otherUser.name}
             </Link>
-            <div className="flex flex-row gap-2" >
+            <div className="flex flex-row gap-2">
               {lastMessage?.createdAt && (
                 <p
                   className="
@@ -143,43 +144,53 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
               font-light
               "
                 >
-                  {format(new Date(lastMessage.createdAt), 'p')}
+                  {format(new Date(lastMessage.createdAt), "p")}
                 </p>
               )}
               <DropdownMenu>
-                <DropdownMenuTrigger><ChevronRight className="rotate-90 text-sm" /></DropdownMenuTrigger>
+                <DropdownMenuTrigger>
+                  <ChevronRight className="rotate-90 text-sm" />
+                </DropdownMenuTrigger>
                 <DropdownMenuContent align="center">
-                  <DropdownMenuItem onClick={handlePin}><PinIcon className="mr-0" size={18} />Pin</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handlePin}>
+                    <PinIcon className="mr-0" size={18} />
+                    Pin
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              {pin && (<Tooltip>
-                <TooltipTrigger> <PinIcon size={15} className="text-gray-700 absolute right-3 -bottom-5" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Pinned conversation</p>
-                </TooltipContent>
-              </Tooltip>
+              {pin && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    {" "}
+                    <PinIcon
+                      size={15}
+                      className="text-gray-700 absolute right-3 -bottom-5"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Pinned conversation</p>
+                  </TooltipContent>
+                </Tooltip>
               )}
-            </div >
-          </div >
-
+            </div>
+          </div>
 
           <p
-            className={clsx(`
+            className={clsx(
+              `
               truncate
               text-sm
             `,
-              hasSeen ? 'text-gray-500' : 'text-black font-medium'
+              hasSeen ? "text-gray-500" : "text-black font-medium"
             )}
             onClick={handleClick}
           >
             {lastMessageText}
           </p>
-
-        </div >
-      </div >
-    </div >
+        </div>
+      </div>
+    </div>
   );
-}
+};
 
 export default ConversationBox;

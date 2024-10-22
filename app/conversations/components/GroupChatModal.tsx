@@ -14,13 +14,13 @@ import { toast } from "react-hot-toast";
 interface GroupChatModalProps {
   isOpen?: boolean;
   onClose: () => void;
-  users: User[]
+  users: User[];
 }
 
 const GroupChatModal: React.FC<GroupChatModalProps> = ({
   isOpen,
   onClose,
-  users
+  users,
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -30,38 +30,38 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
     handleSubmit,
     setValue,
     watch,
-    formState: {
-      errors
-    }
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      name: '',
-      members: []
-    }
+      name: "",
+      members: [],
+    },
   });
 
-  const members = watch('members');
+  const members = watch("members");
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    if (!(data?.members?.length > 1)) {
+      toast.error("Please add more than 2 people to create chat.");
+      return;
+    }
     setIsLoading(true);
 
-    axios.post('/api/conversations', {
-      ...data,
-      isGroup: true
-    })
-    .then(() => {
-      router.refresh();
-      onClose();
-    })
-    .catch(() => toast.error('Something went wrong'))
-    .finally(() => setIsLoading(false))
-  }
+    axios
+      .post("/api/conversations", {
+        ...data,
+        isGroup: true,
+      })
+      .then(() => {
+        router.refresh();
+        onClose();
+      })
+      .catch(() => toast.error("Something went wrong"))
+      .finally(() => setIsLoading(false));
+  };
 
-  return ( 
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-    >
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">
@@ -106,11 +106,13 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
                 label="Members"
                 options={users.map((user) => ({
                   value: user.id,
-                  label: user.name
+                  label: user.name,
                 }))}
-                onChange={(value) => setValue('members', value, {
-                  shouldValidate: true
-                })}
+                onChange={(value) =>
+                  setValue("members", value, {
+                    shouldValidate: true,
+                  })
+                }
                 value={members}
               />
             </div>
@@ -133,16 +135,13 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
           >
             Cancel
           </Button>
-          <Button
-            disabled={isLoading}
-            type="submit"
-          >
+          <Button disabled={isLoading} type="submit">
             Create
           </Button>
         </div>
       </form>
     </Modal>
-   );
-}
- 
+  );
+};
+
 export default GroupChatModal;
