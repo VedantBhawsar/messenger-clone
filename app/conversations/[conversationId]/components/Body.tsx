@@ -52,6 +52,8 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
           return currentMessage;
         })
       );
+
+      sendNotification(newMessage);
     };
 
     pusherClient.bind("messages:new", messageHandler);
@@ -64,8 +66,34 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
     };
   }, [conversationId]);
 
+  function sendNotification(message: FullMessageType) {
+    if (Notification.permission === "granted" && document.hidden) {
+      const notification = new Notification("Hello!", {
+        body: message.body || "New notification",
+        icon: message.sender.image || "/images/logo.png",
+      });
+
+      notification.onclick = () => {
+        window.focus();
+      };
+    }
+  }
+
+  const requestPermission = async () => {
+    if ("Notification" in window) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("User granted the notification permission");
+        } else {
+          console.log("User denied or dismissed the notification permission");
+        }
+      });
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto ">
+      <button onClick={requestPermission}>button</button>
       {!(messages.length > 0) ? (
         <div className="flex  h-96 w-full  justify-center items-center">
           <p className="text-slate-600 font-semibold text-sm">
