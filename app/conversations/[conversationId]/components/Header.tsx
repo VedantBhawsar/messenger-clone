@@ -1,29 +1,28 @@
 "use client";
-
 import { Conversation, User } from "@prisma/client";
-
-import useOtherUser from "@/app/hooks/useOtherUser";
+import useOtherUser from "@/hooks/useOtherUser";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { HiChevronLeft, HiEllipsisHorizontal } from "react-icons/hi2";
-import Avatar from "@/app/components/Avatar";
-import AvatarGroup from "@/app/components/AvatarGroup";
+import Avatar from "@/components/Avatar";
+import AvatarGroup from "@/components/AvatarGroup";
 
 import ProfileDrawer from "./ProfileDrawer";
-import useActiveList from "@/app/hooks/useActiveList";
+import useActiveList from "@/hooks/useActiveList";
+import { BsSpotify } from "react-icons/bs";
+import SpotifyDrawer from "./SpotifyDrawer";
 
 interface HeaderProps {
   conversation: Conversation & {
-    users: User[]
-  }
-};
+    users: User[];
+  };
+}
 
-const Header: React.FC<HeaderProps> = ({
-  conversation
-}) => {
+const Header: React.FC<HeaderProps> = ({ conversation }) => {
   const otherUser = useOtherUser(conversation);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  
+  const [spotifyDrawerOpen, setSpotifyDrawerOpen] = useState(false);
+
   const { members } = useActiveList();
   const isActive = members.indexOf(otherUser?.email!) !== -1;
 
@@ -31,11 +30,11 @@ const Header: React.FC<HeaderProps> = ({
     if (conversation.isGroup) {
       return `${conversation.users.length} members`;
     }
-    
-    return isActive ? 'Active' : 'Offline';
+
+    return isActive ? "Active" : "Offline";
   }, [conversation, isActive]);
 
-  return ( 
+  return (
     <>
       <ProfileDrawer
         data={conversation}
@@ -58,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({
         "
       >
         <div className="flex gap-3 items-center">
-          <Link 
+          <Link
             className="
               lg:hidden
               block
@@ -77,9 +76,7 @@ const Header: React.FC<HeaderProps> = ({
             <Avatar user={otherUser} />
           )}
           <div className="flex flex-col">
-            <div>
-              {conversation.name || otherUser.name}
-            </div>
+            <div>{conversation.name || otherUser.name}</div>
             <div
               className="
                 text-sm
@@ -91,19 +88,22 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
         </div>
-        <HiEllipsisHorizontal
-          size={32}
-          onClick={() => setDrawerOpen(true)}
-          className="
-            text-sky-500
-            cursor-pointer
-            hover:text-sky-600
-            transition
+        <div className="flex gap-5 items-center">
+          <SpotifyDrawer />
+          <HiEllipsisHorizontal
+            size={32}
+            onClick={() => setDrawerOpen(true)}
+            className="
+          text-sky-500
+          cursor-pointer
+          hover:text-sky-600
+          transition
           "
-        />
+          />
+        </div>
       </div>
     </>
-   );
-}
- 
+  );
+};
+
 export default Header;

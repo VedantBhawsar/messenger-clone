@@ -5,14 +5,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MdOutlineGroupAdd } from "react-icons/md";
 
-import useConversation from "@/app/hooks/useConversation";
-import { FullConversationType } from "@/app/types";
+import useConversation from "@/hooks/useConversation";
+import { FullConversationType } from "@/types";
 
 import ConversationBox from "./ConversationBox";
 import GroupChatModal from "./GroupChatModal";
 import { User } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { pusherClient } from "@/app/libs/pusher";
+import { pusherClient } from "@/libs/pusher";
 import { find } from "lodash";
 
 interface ConversationListProps {

@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import useConversation from "@/app/hooks/useConversation";
-import { FullMessageType } from "@/app/types";
+import useConversation from "@/hooks/useConversation";
+import { FullMessageType } from "@/types";
 
 import MessageBox from "./MessageBox";
 import axios from "axios";
-import { pusherClient } from "@/app/libs/pusher";
+import { pusherClient } from "@/libs/pusher";
 import { find } from "lodash";
 
 interface BodyProps {
@@ -93,7 +93,6 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
 
   return (
     <div className="flex-1 overflow-y-auto ">
-      <button onClick={requestPermission}>button</button>
       {!(messages.length > 0) ? (
         <div className="flex  h-96 w-full  justify-center items-center">
           <p className="text-slate-600 font-semibold text-sm">

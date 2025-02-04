@@ -5,8 +5,8 @@ import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import Avatar from "@/app/components/Avatar";
-import LoadingModal from "@/app/components/LoadingModal";
+import Avatar from "@/components/Avatar";
+import LoadingModal from "@/components/LoadingModal";
 import {
   DropdownMenu,
   DropdownMenuContent,

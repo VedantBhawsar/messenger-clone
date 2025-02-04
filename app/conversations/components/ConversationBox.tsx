@@ -7,10 +7,10 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import clsx from "clsx";
 
-import { FullConversationType } from "@/app/types";
-import useOtherUser from "@/app/hooks/useOtherUser";
-import Avatar from "@/app/components/Avatar";
-import AvatarGroup from "@/app/components/AvatarGroup";
+import { FullConversationType } from "@/types";
+import useOtherUser from "@/hooks/useOtherUser";
+import Avatar from "@/components/Avatar";
+import AvatarGroup from "@/components/AvatarGroup";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ import { ChevronRight, PinIcon } from "lucide-react";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import getCurrentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/actions/getCurrentUser";
 import {
   Tooltip,
   TooltipContent,
@@ -39,7 +39,6 @@ interface ConversationBoxProps {
 const ConversationBox: React.FC<ConversationBoxProps> = ({
   data,
   selected,
-
   pin = false,
 }) => {
   const otherUser = useOtherUser(data);
@@ -154,7 +153,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
                 <DropdownMenuContent align="center">
                   <DropdownMenuItem onClick={handlePin}>
                     <PinIcon className="mr-0" size={18} />
-                    Pin
+                    <span>{pin ? "Unpin" : "Pin"}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -1,6 +1,6 @@
 "use client";
 
-import useConversation from "@/app/hooks/useConversation";
+import useConversation from "@/hooks/useConversation";
 import axios from "axios";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { HiPaperAirplane, HiPhoto } from "react-icons/hi2";
@@ -10,7 +10,8 @@ import EmojiPicker from "emoji-picker-react";
 import MessageInput from "./MessageInput";
 import { useState } from "react";
 import { Smile } from "lucide-react";
-import Button from "@/app/components/Button";
+import Button from "@/components/Button";
+import { IoAttach } from "react-icons/io5";
 
 const Form = () => {
   const { conversationId } = useConversation();
@@ -45,6 +46,8 @@ const Form = () => {
     });
   };
 
+  function handleDocUpload() {}
+
   return (
     <div
       className="
@@ -66,6 +69,9 @@ const Form = () => {
       >
         <HiPhoto size={30} className="text-sky-500" />
       </CldUploadButton>
+      <Button secondary={true} onClick={handleDocUpload}>
+        <IoAttach className="text-xl" />
+      </Button>
       <div className="relative">
         <Button
           secondary

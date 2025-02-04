@@ -1,8 +1,8 @@
 "use client";
 
-import Button from "@/app/components/Button";
-import Modal from "@/app/components/Modal";
-import useConversation from "@/app/hooks/useConversation";
+import Button from "@/components/Button";
+import Modal from "@/components/Modal";
+import useConversation from "@/hooks/useConversation";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -15,10 +15,7 @@ interface ConfirmModalProps {
   onClose: () => void;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  isOpen,
-  onClose
-}) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose }) => {
   const router = useRouter();
   const { conversationId } = useConversation();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,21 +23,19 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const onDelete = useCallback(() => {
     setIsLoading(true);
 
-    axios.delete(`/api/conversations/${conversationId}`)
-    .then(() => {
-      onClose();
-      router.push('/conversations');
-      router.refresh();
-    })
-    .catch(() => toast.error('Something went wrong!'))
-    .finally(() => setIsLoading(false))
+    axios
+      .delete(`/api/conversations/${conversationId}`)
+      .then(() => {
+        onClose();
+        router.push("/conversations");
+        router.refresh();
+      })
+      .catch(() => toast.error("Something went wrong!"))
+      .finally(() => setIsLoading(false));
   }, [conversationId, router, onClose]);
 
-  return ( 
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-    >
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className="sm:flex sm:items-start">
         <div
           className="
@@ -58,9 +53,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             sm:w-10
           "
         >
-          <FiAlertTriangle
-            className="h-6 w-6 text-red-600"
-          />
+          <FiAlertTriangle className="h-6 w-6 text-red-600" />
         </div>
         <div
           className="
@@ -84,7 +77,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </Dialog.Title>
           <div className="mt-2">
             <p className="text-sm text-gray-500">
-              Are you sure you want to delete this conversation? This action cannot be undone.
+              Are you sure you want to delete this conversation? This action
+              cannot be undone.
             </p>
           </div>
         </div>
@@ -97,23 +91,15 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           sm:flex-row-reverse
         "
       >
-        <Button
-          disabled={isLoading}
-          danger
-          onClick={onDelete}
-        >
+        <Button disabled={isLoading} danger onClick={onDelete}>
           Delete
         </Button>
-        <Button
-          disabled={isLoading}
-          secondary
-          onClick={onClose}
-        >
+        <Button disabled={isLoading} secondary onClick={onClose}>
           Cancel
         </Button>
       </div>
     </Modal>
-   );
-}
- 
+  );
+};
+
 export default ConfirmModal;

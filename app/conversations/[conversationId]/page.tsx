@@ -1,14 +1,15 @@
-import getConversationById from "@/app/actions/getConversationById";
-import getMessages from "@/app/actions/getMessages";
-import EmptyState from "@/app/components/EmptyState";
+import getConversationById from "@/actions/getConversationById";
+import getMessages from "@/actions/getMessages";
+import EmptyState from "@/components/EmptyState";
 
-import Header from "./components/Header";
-import Body from "./components/Body";
-import Form from "./components/Form";
+const Header = dynamic(() => import("./components/Header"));
+const Body = dynamic(() => import("./components/Body"));
+const Form = dynamic(() => import("./components/Form"));
+import dynamic from "next/dynamic";
 
 interface IParams {
   conversationId: string;
-};
+}
 
 const ConversationId = async ({ params }: { params: IParams }) => {
   const conversation = await getConversationById(params.conversationId);
@@ -32,7 +33,7 @@ const ConversationId = async ({ params }: { params: IParams }) => {
         <Form />
       </div>
     </div>
-  )
+  );
 };
 
 export default ConversationId;

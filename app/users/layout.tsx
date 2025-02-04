@@ -1,9 +1,13 @@
-import getUsers from '../actions/getUsers';
-import Sidebar from '../components/sidebar/Sidebar';
-import UserList from './components/UserList';
-
+import dynamic from "next/dynamic";
+import getUsers from "../../actions/getUsers";
+import UserList from "./components/UserList";
+import Sidebar from "../../components/sidebar/Sidebar";
+const Header = dynamic(
+  () => import("../conversations/[conversationId]/components/Header"),
+);
+const Userlist = dynamic(() => import("./components/UserList"));
 export default async function UsersLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
@@ -17,5 +21,5 @@ export default async function UsersLayout({
         {children}
       </div>
     </Sidebar>
-  )
-};
+  );
+}
