@@ -48,6 +48,9 @@ model User {
   pinnedConversationIds String[]       @db.ObjectId
   pinnedConversation    Conversation[] @relation("PinnedConversations", fields: [pinnedConversationIds], references: [id])
 
+  playlistIds String[]   @db.ObjectId
+  playlists   Playlist[]
+
   accounts Account[]
   messages Message[]
 }
@@ -67,6 +70,9 @@ model Conversation {
 
   pinnedUsersIds String[] @db.ObjectId
   pinnedUsers    User[]   @relation("PinnedConversations", fields: [pinnedUsersIds], references: [id])
+
+  playlistIds String[]   @db.ObjectId
+  playlists   Playlist[]
 }
 
 model Message {
@@ -83,4 +89,33 @@ model Message {
 
   senderId String @db.ObjectId
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model Song {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  artist     String
+  albumCover String?
+  duration   Int // Duration in seconds
+  youtubeUrl String // YouTube video URL
+  createdAt  DateTime @default(now())
+
+  playlistIds String[]   @db.ObjectId
+  playlists   Playlist[] @relation(fields: [playlistIds], references: [id])
+}
+
+model Playlist {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  songIds String[] @db.ObjectId
+  songs   Song[]   @relation(fields: [songIds], references: [id])
+
+  conversationId String?       @db.ObjectId
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  ownerId String @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 }

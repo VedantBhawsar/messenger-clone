@@ -1,12 +1,41 @@
-import React, { useState } from "react";
-import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
+"use client";
+
+import React from "react";
+import { Play, Pause, SkipBack, SkipForward, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { useMusic } from "@/context/MusicContext";
 
 const MusicPlayerCard = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState([33]);
+  const {
+    currentSong,
+    isPlaying,
+    progress,
+    volume,
+    play,
+    pause,
+    next,
+    previous,
+    seek,
+    setVolume,
+  } = useMusic();
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (!currentSong) {
+    return (
+      <Card className="backdrop-blur-lg border-none">
+        <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
+          <p className="text-gray-500">No song selected</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="backdrop-blur-lg border-none">
@@ -14,7 +43,7 @@ const MusicPlayerCard = () => {
         {/* Album Art */}
         <div className="relative group cursor-pointer">
           <img
-            src="https://images.unsplash.com/photo-1610177498573-78deaa4a797b?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src={currentSong.albumCover || '/default-album-art.png'}
             alt="Album cover"
             className="w-56 h-56 object-cover rounded-2xl shadow-xl transition-transform duration-300 group-hover:scale-105"
           />
@@ -23,7 +52,7 @@ const MusicPlayerCard = () => {
               variant="ghost"
               size="icon"
               className="w-16 h-16 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110 transition-all duration-300"
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={() => isPlaying ? pause() : play()}
             >
               {isPlaying ? (
                 <Pause className="w-8 h-8 text-white" />
@@ -36,22 +65,22 @@ const MusicPlayerCard = () => {
 
         {/* Song Info */}
         <div className="mt-6 text-center">
-          <h2 className="text-xl font-bold mb-1">Song Title</h2>
-          <p className="text-sm text-gray-500 mb-4">Artist Name</p>
+          <h2 className="text-xl font-bold mb-1">{currentSong.title}</h2>
+          <p className="text-sm text-gray-500 mb-4">{currentSong.artist}</p>
         </div>
 
         {/* Progress Bar */}
         <div className="w-full px-2 mb-4">
           <Slider
-            value={progress}
-            onValueChange={setProgress}
-            max={100}
+            value={[progress]}
+            onValueChange={([value]) => seek(value)}
+            max={currentSong.duration}
             step={1}
             className="w-full"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>1:23</span>
-            <span>3:45</span>
+            <span>{formatTime(progress)}</span>
+            <span>{formatTime(currentSong.duration)}</span>
           </div>
         </div>
 
@@ -61,6 +90,7 @@ const MusicPlayerCard = () => {
             variant="ghost"
             size="icon"
             className="w-12 h-12 rounded-full hover:bg-black/5"
+            onClick={previous}
           >
             <SkipBack className="w-6 h-6" />
           </Button>
@@ -69,7 +99,7 @@ const MusicPlayerCard = () => {
             variant="default"
             size="icon"
             className="w-14 h-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300"
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={() => isPlaying ? pause() : play()}
           >
             {isPlaying ? (
               <Pause className="w-7 h-7 text-white" />
@@ -82,9 +112,22 @@ const MusicPlayerCard = () => {
             variant="ghost"
             size="icon"
             className="w-12 h-12 rounded-full hover:bg-black/5"
+            onClick={next}
           >
             <SkipForward className="w-6 h-6" />
           </Button>
+        </div>
+
+        {/* Volume Control */}
+        <div className="w-full mt-4 flex items-center gap-2 px-2">
+          <Volume2 className="w-4 h-4 text-gray-500" />
+          <Slider
+            value={[volume * 100]}
+            onValueChange={([value]) => setVolume(value / 100)}
+            max={100}
+            step={1}
+            className="w-full"
+          />
         </div>
       </CardContent>
     </Card>

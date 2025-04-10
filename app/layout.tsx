@@ -5,6 +5,7 @@ import AuthContext from "@/context/AuthContext";
 import ActiveStatus from "@/components/ActiveStatus";
 import { TooltipProvider } from "../components/ui/tooltip";
 import "./globals.css";
+import { MusicProvider } from '@/context/MusicContext'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +26,10 @@ export default function RootLayout({
           <AuthContext>
             <NextTopLoader />
             <ToasterContext />
-            <ActiveStatus />
-            {children}
+            <MusicProvider>
+              <ActiveStatus />
+              {children}
+            </MusicProvider>
           </AuthContext>
         </TooltipProvider>
       </body>
