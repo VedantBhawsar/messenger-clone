@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { User } from "@prisma/client";
+import { motion } from "framer-motion";
 
 import useRoutes from "@/hooks/useRoutes";
 
@@ -24,6 +25,24 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
     }
   }, []);
 
+  // Animation variants
+  const sidebarVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { 
+        duration: 0.4,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 }
+  };
+
   return (
     <>
       <SettingsModal
@@ -31,7 +50,10 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       />
-      <div
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={sidebarVariants}
         className="
           hidden
           lg:fixed
@@ -41,12 +63,19 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
           lg:w-20
           xl:px-6
           lg:overflow-y-auto
-          lg:bg-white
+          lg:bg-gradient-to-b
+          lg:from-indigo-50
+          lg:to-white
+          dark:lg:from-gray-900
+          dark:lg:to-gray-950
           lg:border-r-[1px]
+          lg:border-indigo-100
+          dark:lg:border-indigo-950/50
           lg:pb-4
           lg:flex
           lg:flex-col
           justify-between
+          shadow-md
         "
       >
         <nav
@@ -57,28 +86,37 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
             justify-between
           "
         >
-          <ul
+          <motion.ul
+            variants={sidebarVariants}
             role="list"
             className="
               flex
               flex-col
               items-center
-              space-y-1
+              space-y-2
             "
           >
-            {routes.map((item) => (
-              <DesktopItem
+            {routes.map((item, index) => (
+              <motion.div 
                 key={item.label}
-                href={item.href}
-                label={item.label}
-                icon={item.icon}
-                active={item.active}
-                onClick={item.onClick}
-              />
+                variants={itemVariants}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <DesktopItem
+                  href={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  active={item.active}
+                  onClick={item.onClick}
+                />
+              </motion.div>
             ))}
-          </ul>
+          </motion.ul>
         </nav>
-        <nav
+        <motion.nav
+          variants={itemVariants}
           className="
             mt-4
             flex
@@ -87,18 +125,28 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
             items-center
           "
         >
-          <div
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
             className="
               cursor-pointer
-              hover:opacity-75
               transition
+              rounded-full
+              p-1
+              bg-white/80
+              dark:bg-gray-800/80
+              shadow-md
+              backdrop-blur-sm
+              border
+              border-indigo-100
+              dark:border-indigo-900/20
             "
           >
             <Avatar user={currentUser} />
-          </div>
-        </nav>
-      </div>
+          </motion.div>
+        </motion.nav>
+      </motion.div>
     </>
   );
 };

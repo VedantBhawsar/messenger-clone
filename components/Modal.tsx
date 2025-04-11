@@ -2,7 +2,7 @@
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { IoClose } from "react-icons/io5";
+import { X } from "lucide-react";
 
 interface ModalProps {
   isOpen?: boolean;
@@ -38,9 +38,11 @@ const Modal: React.FC<ModalProps> = ({
             className="
               fixed
               inset-0
-              bg-gray-500
-              bg-opacity-75
-              transition-opacity
+              bg-gradient-to-br
+              from-indigo-900/30
+              to-black/50
+              backdrop-blur-sm
+              transition-all
             "
           />
         </Transition.Child>
@@ -70,18 +72,22 @@ const Modal: React.FC<ModalProps> = ({
                   relative
                   transform
                   overflow-hidden
-                  rounded-lg
+                  rounded-xl
                   bg-white
+                  dark:bg-gray-900
                   px-4
                   pb-4
                   text-left
-                  shadow-xsl
+                  shadow-xl
                   transition-all
                   w-full
                   sm:my-8
                   sm:w-full
                   sm:max-w-lg
                   sm:p-6
+                  border
+                  border-indigo-100
+                  dark:border-indigo-900/30
                 "
               >
                 <div
@@ -89,34 +95,35 @@ const Modal: React.FC<ModalProps> = ({
                     absolute
                     right-0
                     top-0
-                    hidden
                     pr-4
                     pt-4
-                    sm:block
                     z-10
                   "
                 >
                   <button
                     type="button"
                     className="
-                      rounded-md
-                      bg-white
-                      text-gray-400
-                      hover:text-gray-500
+                      rounded-full
+                      bg-white/80
+                      dark:bg-gray-800/80
+                      text-gray-500
+                      dark:text-gray-400
+                      hover:text-indigo-600
+                      dark:hover:text-indigo-400
+                      hover:bg-white
+                      dark:hover:bg-gray-800
+                      p-1.5
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-sky-500
+                      focus:ring-indigo-500
                       focus:ring-offset-2
+                      transition-all
+                      duration-200
                     "
                     onClick={onClose}
                   >
                     <span className="sr-only">Close</span>
-                    <IoClose
-                      className="
-                        h-6
-                        w-6
-                      "
-                    />
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
                 {children}

@@ -11,6 +11,8 @@ import { toast } from "react-hot-toast";
 import Button from "../Button";
 import Modal from "../Modal";
 import Input from "../inputs/Input";
+import { motion } from "framer-motion";
+import { Settings, Upload } from "lucide-react";
 
 interface SettingsModalProps {
   isOpen?: boolean;
@@ -25,7 +27,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  console.log("currentUser", currentUser);
+  
   const {
     register,
     handleSubmit,
@@ -55,107 +57,135 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       .then(() => {
         router.refresh();
         onClose();
+        toast.success("Profile updated successfully!");
       })
       .catch(() => toast.error("Something went wrong!"))
       .finally(() => setIsLoading(false));
   };
 
+  const modalVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-12">
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2
-              className="
-              text-base
-              font-semibold
-              leading-7
-              text-gray-900
-            "
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={modalVariants}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-8">
+            <motion.div 
+              className="border-b border-indigo-100 dark:border-indigo-900/30 pb-8"
+              variants={itemVariants}
             >
-              Profile
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Edit your public information.
-            </p>
-
-            <div
-              className="
-              mt-10
-              flex
-              flex-col
-              gap-y-8
-            "
-            >
-              <Input
-                disabled={isLoading}
-                label="Name"
-                id="name"
-                errors={errors}
-                required
-                register={register}
-              />
-              <div>
-                <label
-                  className="
-                    block
-                    text-sm
-                    font-medium
-                    leading-6
-                    text-gray-900
-                  "
-                >
-                  Photo
-                </label>
-                <div
-                  className="
-                  mt-2
-                  flex
-                  items-center
-                  gap-x-3
-                "
-                >
-                  <Image
-                    width="48"
-                    height="48"
-                    className="rounded-full object-cover bg-red-500"
-                    src={
-                      image || currentUser?.image || "/images/placeholder.jpg"
-                    }
-                    alt="Avatar"
-                  />
-                  <CldUploadButton
-                    options={{ maxFiles: 1 }}
-                    onUpload={handleUpload}
-                    uploadPreset="iug38uvw"
-                  >
-                    <Button disabled={isLoading} type="button">
-                      Change
-                    </Button>
-                  </CldUploadButton>
-                </div>
+              <div className="flex items-center gap-3">
+                <Settings className="h-6 w-6 text-indigo-500 dark:text-indigo-400" />
+                <h2 className="text-xl font-bold music-text-gradient">
+                  Profile Settings
+                </h2>
               </div>
-            </div>
-          </div>
+              <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
+                Edit your public profile information.
+              </p>
 
-          <div
-            className="
-              mt-6
-              flex
-              items-center
-              justify-end
-              gap-x-6
-            "
-          >
-            <Button disabled={isLoading} secondary onClick={onClose}>
-              Cancel
-            </Button>
-            <Button disabled={isLoading} type="submit">
-              Save
-            </Button>
+              <motion.div
+                className="mt-8 flex flex-col gap-y-6"
+                variants={itemVariants}
+              >
+                <Input
+                  disabled={isLoading}
+                  label="Name"
+                  id="name"
+                  errors={errors}
+                  required
+                  register={register}
+                />
+                <motion.div variants={itemVariants}>
+                  <label className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-200 mb-2">
+                    Photo
+                  </label>
+                  <div className="flex items-center gap-x-4">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      className="relative h-16 w-16 rounded-full overflow-hidden border-2 border-white dark:border-gray-800 shadow-md"
+                    >
+                      <Image
+                        fill
+                        className="rounded-full object-cover"
+                        src={image || currentUser?.image || "/images/placeholder.jpg"}
+                        alt="Avatar"
+                      />
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <CldUploadButton
+                        options={{ maxFiles: 1 }}
+                        onUpload={handleUpload}
+                        uploadPreset="iug38uvw"
+                      >
+                        <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 border border-indigo-200 dark:border-indigo-800 hover:border-indigo-300 dark:hover:border-indigo-700 text-indigo-700 dark:text-indigo-300 rounded-md px-3 py-2 flex items-center gap-2 text-sm font-semibold">
+                          <Upload className="h-4 w-4" />
+                          <Button disabled={isLoading} type="button">
+                            Upload
+                          </Button>
+                        </div>
+                      </CldUploadButton>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center justify-end gap-x-4"
+            >
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <Button disabled={isLoading} secondary onClick={onClose}>
+                  Cancel
+                </Button>
+              </motion.div>
+              <motion.div 
+                whileHover={{ scale: 1.03 }} 
+                whileTap={{ scale: 0.97 }}
+                className="overflow-hidden rounded-md bg-gradient-to-r from-indigo-500 to-purple-600 p-[1px]"
+              >
+                <Button disabled={isLoading} type="submit">
+                  {isLoading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                      className="mr-2"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </motion.div>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-      </form>
+        </form>
+      </motion.div>
     </Modal>
   );
 };
